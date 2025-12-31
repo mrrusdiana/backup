@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MR.RUSDIANA | Video Gallery</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           VARIABLE & RESET
+           ========================================= */
+        :root {
+            --bg-body: #f4f6f8;
+            --bg-card: #ffffff;
+            --text-main: #2d3436;
+            --text-sub: #636e72;
+            --accent: #0984e3;
+            --accent-hover: #00cec9;
+            --btn-pass-bg: #2d3436;
+            --btn-pass-text: #ffffff;
+            --shadow-card: 0 10px 20px rgba(0,0,0,0.05);
+            --shadow-hover: 0 15px 30px rgba(0,0,0,0.15);
+            --border-color: #e0e0e0;
+            --toggle-bg: #dfe6e9;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #dfe6e9;
+            --text-sub: #b2bec3;
+            --accent: #74b9ff;
+            --accent-hover: #81ecec;
+            --btn-pass-bg: #dfe6e9;
+            --btn-pass-text: #2d3436;
+            --shadow-card: 0 10px 20px rgba(0,0,0,0.3);
+            --shadow-hover: 0 15px 30px rgba(0,0,0,0.5);
+            --border-color: #2d3436;
+            --toggle-bg: #2d3436;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* =========================================
+           HEADER
+           ========================================= */
+        header {
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-card);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            position: relative;
+            background: linear-gradient(90deg, var(--text-main), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo:hover { opacity: 0.8; }
+
+        /* Toggle Switch */
+        .theme-switch-wrapper { display: flex; align-items: center; }
+        .theme-switch { display: inline-block; height: 28px; position: relative; width: 54px; }
+        .theme-switch input { display: none; }
+        .slider { background-color: var(--toggle-bg); bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border-radius: 34px; border: 1px solid var(--border-color); }
+        .slider:before { background-color: #fff; bottom: 3px; content: ""; height: 20px; left: 4px; position: absolute; transition: .4s; width: 20px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        /* =========================================
+           MAIN CONTENT (GRID)
+           ========================================= */
+        main {
+            flex: 1;
+            padding: 3rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        /* CARD STYLE */
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            opacity: 0; /* Hidden by default for animation */
+            transform: translateY(30px);
+            border: 1px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent);
+        }
+
+        .card-thumb {
+            width: 100%;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover .card-thumb img { transform: scale(1.05); }
+
+        .card-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 0;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-visit {
+            background-color: var(--accent);
+            color: #fff;
+        }
+        .btn-visit:hover {
+            background-color: var(--accent-hover);
+            color: #000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-password {
+            background-color: var(--btn-pass-bg);
+            color: var(--btn-pass-text);
+        }
+        .btn-password:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* =========================================
+           ANIMATIONS
+           ========================================= */
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* =========================================
+           FOOTER & PAGINATION
+           ========================================= */
+        footer {
+            padding: 2rem 0;
+            background-color: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 1.5rem; }
+
+        .page-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+        .page-btn:hover { background-color: var(--accent); border-color: var(--accent); color: white; transform: scale(1.1); }
+        .page-text { font-weight: 600; color: var(--text-sub); font-size: 0.9rem; letter-spacing: 1px; }
+        .icon { width: 20px; height: 20px; fill: currentColor; }
+
+        @media (max-width: 600px) {
+            .gallery-grid { grid-template-columns: 1fr; }
+            header { padding: 1rem 5%; }
+            .logo { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="https://youtube.com/@mrrusdiana?si=LbYNRqDi6KbBopaK" target="_blank" class="logo">
+            MR.RUSDIANA
+        </a>
+
+        <div class="theme-switch-wrapper">
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" />
+                <div class="slider"></div>
+            </label>
+        </div>
+    </header>
+
+    <main>
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </main>
+
+    <footer>
+        <div class="pagination">
+            <button class="page-btn" id="prevBtn" aria-label="Previous">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+            </button>
+            <span class="page-text" id="pageIndicator">HALAMAN 1</span>
+            <button class="page-btn" id="nextBtn" aria-label="Next">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            </button>
+        </div>
+    </footer>
+
+    <script type="module">
+        // 1. Import fungsi yang dibutuhkan dari Firebase SDK (via CDN)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        // EDIT: Menambahkan import query function
+        import { 
+            getFirestore, 
+            collection, 
+            query, 
+            where, 
+            orderBy, 
+            limit, 
+            getDocs 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 2. Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNsUDr4duaFLChn4wXjg7v22GuNk5RGt4",
+            authDomain: "viewrusdiana.firebaseapp.com",
+            projectId: "viewrusdiana",
+            storageBucket: "viewrusdiana.firebasestorage.app",
+            messagingSenderId: "293768351632",
+            appId: "1:293768351632:web:ec3c7a63621a9a9fa9ad15",
+            measurementId: "G-BTCV8EV2K7"
+        };
+
+        // 3. Inisialisasi Firebase App
+        const app = initializeApp(firebaseConfig);
+
+        // 4. Inisialisasi Firestore Service
+        const db = getFirestore(app);
+
+        // 5. Cek koneksi
+        console.log("====================================");
+        console.log("✅ Firebase Config Loaded");
+        console.log("🔥 Firestore Instance Ready");
+        console.log("====================================");
+
+        // =========================================
+        // DATA FALLBACK (DUMMY DATA)
+        // =========================================
+        // Data ini hanya akan dipakai jika Firestore gagal/kosong
+        const dummyData = [
+            {
+                title: "Cara Membuat Animasi Keren dengan Mudah",
+                thumbnail: "https://i.ibb.co.com/R4bxTdNF/Proyek-Baru-23-Copy-F6-C3100.png",
+                noPasswordUrl: "https://bicolink.com/GU0R",
+                passwordUrl: "https://bicolink.com/GU0R"
+            },
+            {
+                title: "Tutorial Editing Video Cinematic",
+                thumbnail: "https://i.ibb.co.com/R4bxTdNF/Proyek-Baru-23-Copy-F6-C3100.png",
+                noPasswordUrl: "https://bicolink.com/GU0R",
+                passwordUrl: "https://bicolink.com/GU0R"
+            },
+            {
+                title: "Tips & Trik Menjadi YouTuber Pemula",
+                thumbnail: "https://i.ibb.co.com/R4bxTdNF/Proyek-Baru-23-Copy-F6-C3100.png",
+                noPasswordUrl: "https://bicolink.com/GU0R",
+                passwordUrl: "https://bicolink.com/GU0R"
+            }
+        ];
+
+        // =========================================
+        // DOM ELEMENTS
+        // =========================================
+        const galleryGrid = document.getElementById('galleryGrid');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageIndicator = document.getElementById('pageIndicator');
+
+        // =========================================
+        // FUNCTIONS
+        // =========================================
+
+        /**
+         * Fungsi untuk merender kartu video ke dalam grid (TIDAK DIUBAH)
+         */
+        function renderGallery(data) {
+            galleryGrid.innerHTML = '';
+            
+            if (data.length === 0) {
+                galleryGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Belum ada video yang tersedia.</p>';
+                return;
+            }
+
+            data.forEach((video, index) => {
+                const card = document.createElement('article');
+                card.classList.add('card');
+                
+                // Animasi staggered
+                card.style.animation = `fadeInUp 0.6s ease forwards ${index * 0.1}s`;
+
+                card.innerHTML = `
+                    <div class="card-thumb">
+                        <img src="${video.thumbnail}" alt="${video.title}" loading="lazy" onerror="this.src='https://placehold.co/600x400?text=No+Image'">
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">${video.title}</h3>
+                        <div class="card-actions">
+                            <a href="${video.passwordUrl}" target="_blank" class="btn btn-password">Password</a>
+                            <a href="${video.noPasswordUrl}" target="_blank" class="btn btn-visit">No Password</a>
+                        </div>
+                    </div>
+                `;
+                galleryGrid.appendChild(card);
+            });
+        }
+
+        /**
+         * 🆕 FUNGSI BARU: Fetch Data dari Firestore
+         */
+        async function fetchVideosFromFirestore() {
+            try {
+                // Referensi ke koleksi 'videos'
+                const videosRef = collection(db, "videos");
+
+                // Buat query: yang aktif saja, urutkan dari terbaru, ambil 5
+                // CATATAN: Jika error index di console, klik link yang muncul di console untuk buat index di Firebase
+                const q = query(
+  videosRef,
+  where("isActive", "==", true),
+  limit(5)
+);
+
+                const querySnapshot = await getDocs(q);
+                
+                // Mapping hasil dokumen ke array object
+                const videos = querySnapshot.docs.map(doc => {
+                    return { id: doc.id, ...doc.data() };
+                });
+
+                return videos;
+
+            } catch (error) {
+                console.error("❌ Gagal mengambil data Firestore:", error);
+                return null;
+            }
+        }
+
+        // =========================================
+        // PAGINATION & LOAD LOGIC (MODIFIED)
+        // =========================================
+        
+        let currentPage = 1;
+
+        /**
+         * Fungsi Load Page telah diupdate menjadi ASYNC
+         * untuk mengambil data Firestore
+         */
+        async function loadPage(page) {
+            console.log(`⏳ Memuat data untuk halaman ${page}...`);
+            
+            // Tampilkan loading (opsional, visual feedback sederhana)
+            galleryGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Sedang memuat data...</p>';
+
+            // 1. Coba ambil data dari Firestore
+            const firestoreData = await fetchVideosFromFirestore();
+
+            // 2. Cek apakah data ada
+            if (firestoreData && firestoreData.length > 0) {
+                console.log(`✅ Berhasil memuat ${firestoreData.length} video dari Firestore.`);
+                renderGallery(firestoreData);
+            } else {
+                // 3. Jika gagal atau kosong, gunakan Dummy Data (Fallback)
+                console.warn("⚠️ Data Firestore kosong atau error. Menggunakan Dummy Data.");
+                renderGallery(dummyData);
+            }
+            
+            pageIndicator.innerText = `HALAMAN ${page}`;
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                loadPage(currentPage);
+                animateButton(prevBtn);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            // Logic next page bisa dikembangkan nanti (menggunakan startAfter di Firestore)
+            currentPage++;
+            loadPage(currentPage);
+            animateButton(nextBtn);
+        });
+
+        function animateButton(btn) {
+            btn.style.transform = "scale(0.9)";
+            setTimeout(() => btn.style.transform = "scale(1)", 150);
+        }
+
+        // =========================================
+        // INITIALIZATION
+        // =========================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPage(currentPage);
+        });
+
+        // =========================================
+        // DARK MODE LOGIC (TETAP)
+        // =========================================
+        const toggleSwitch = document.querySelector('#checkbox');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            if (currentTheme === 'dark') {
+                toggleSwitch.checked = true;
+            }
+        }
+
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        toggleSwitch.addEventListener('change', switchTheme);
+
+    </script>
+</body>
+</html>

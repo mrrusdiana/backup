@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Video Gallery</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           DARK THEME VARIABLES
+           ========================================= */
+        :root {
+            --bg-body: #0f172a;       /* Slate 900 */
+            --bg-card: #1e293b;       /* Slate 800 */
+            --bg-input: #334155;      /* Slate 700 */
+            --text-main: #f8fafc;     /* Slate 50 */
+            --text-muted: #94a3b8;    /* Slate 400 */
+            --border: #334155;        
+            --primary: #3b82f6;       /* Blue 500 */
+            --primary-hover: #2563eb; /* Blue 600 */
+            --danger: #ef4444;        /* Red 500 */
+            --success: #22c55e;       /* Green 500 */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
+        header {
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .subtitle { font-size: 0.9rem; color: var(--text-muted); }
+
+        /* FORM STYLE */
+        .admin-card {
+            background-color: var(--bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .form-title { margin-bottom: 20px; font-size: 1.2rem; font-weight: 600; }
+
+        .form-group { margin-bottom: 15px; }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        input[type="text"], input[type="url"] {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Checkbox Switch Style */
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+        }
+
+        /* BUTTONS */
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary { background-color: var(--primary); color: white; flex: 1; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+
+        .btn-cancel { background-color: var(--bg-input); color: var(--text-muted); }
+        .btn-cancel:hover { background-color: var(--border); color: white; }
+
+        .btn-danger { background-color: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); font-size: 0.8rem; padding: 6px 12px; }
+        .btn-danger:hover { background-color: var(--danger); color: white; }
+
+        .btn-edit { background-color: rgba(59, 130, 246, 0.1); color: var(--primary); border: 1px solid var(--primary); font-size: 0.8rem; padding: 6px 12px; }
+        .btn-edit:hover { background-color: var(--primary); color: white; }
+
+        /* LIST STYLE */
+        .video-item {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .video-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .video-title { font-weight: 600; font-size: 1.1rem; }
+        
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .status-active { background-color: rgba(34, 197, 94, 0.2); color: var(--success); }
+        .status-inactive { background-color: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        .video-links {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            word-break: break-all;
+        }
+        
+        .video-links span { display: block; margin-bottom: 4px; }
+
+        .video-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+        }
+
+        .loading-text { text-align: center; color: var(--text-muted); padding: 20px; }
+
+        @media (min-width: 600px) {
+            .video-item { flex-direction: row; align-items: center; }
+            .video-content { flex: 1; }
+            .video-actions { margin-top: 0; border-top: none; padding-top: 0; flex-direction: column; gap: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1>Admin Panel</h1>
+                <div class="subtitle">Kelola Konten Video Gallery</div>
+            </div>
+            <div id="connectionStatus" style="font-size: 0.8rem; color: var(--text-muted);">
+                Connecting...
+            </div>
+        </header>
+
+        <section class="admin-card">
+            <h2 class="form-title" id="formHeader">Tambah Video Baru</h2>
+            <form id="videoForm">
+                <input type="hidden" id="docId">
+
+                <div class="form-group">
+                    <label>Judul Video</label>
+                    <input type="text" id="title" placeholder="Contoh: Tutorial Cara Membuat..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>URL Thumbnail (Gambar)</label>
+                    <input type="url" id="thumbnail" placeholder="https://..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>Link No Password</label>
+                    <input type="url" id="noPasswordUrl" placeholder="https://..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>Link Password</label>
+                    <input type="url" id="passwordUrl" placeholder="https://..." required>
+                </div>
+
+                <div class="form-group checkbox-wrapper">
+                    <input type="checkbox" id="isActive" checked>
+                    <label for="isActive" style="margin:0; cursor:pointer;">Tampilkan Video (Active)</label>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary" id="submitBtn">Simpan Video</button>
+                    <button type="button" class="btn-cancel" id="cancelBtn" style="display: none;">Batal Edit</button>
+                </div>
+            </form>
+        </section>
+
+        <h2 style="margin-bottom: 15px; font-size: 1.2rem;">Daftar Video</h2>
+        <div id="videoList">
+            <div class="loading-text">Memuat data dari Firestore...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        // 1. Import Library
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            onSnapshot, 
+            doc, 
+            deleteDoc, 
+            updateDoc, 
+            serverTimestamp,
+            query,
+            orderBy
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 2. Config (Sesuai Data Anda)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNsUDr4duaFLChn4wXjg7v22GuNk5RGt4",
+            authDomain: "viewrusdiana.firebaseapp.com",
+            projectId: "viewrusdiana",
+            storageBucket: "viewrusdiana.firebasestorage.app",
+            messagingSenderId: "293768351632",
+            appId: "1:293768351632:web:ec3c7a63621a9a9fa9ad15",
+            measurementId: "G-BTCV8EV2K7"
+        };
+
+        // 3. Init Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // UI References
+        const videoForm = document.getElementById('videoForm');
+        const videoList = document.getElementById('videoList');
+        const submitBtn = document.getElementById('submitBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const formHeader = document.getElementById('formHeader');
+        const connStatus = document.getElementById('connectionStatus');
+
+        // Indikator Koneksi
+        connStatus.innerText = "🟢 Firebase Ready";
+
+        // ==========================================
+        // READ DATA (REALTIME LISTENER)
+        // ==========================================
+        const q = query(collection(db, "videos"), orderBy("createdAt", "desc"));
+
+        onSnapshot(q, (snapshot) => {
+            videoList.innerHTML = ''; // Clear list
+
+            if (snapshot.empty) {
+                videoList.innerHTML = '<div class="loading-text">Belum ada data video.</div>';
+                return;
+            }
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const id = doc.id;
+                
+                // Render Item
+                const item = document.createElement('div');
+                item.className = 'video-item';
+                item.innerHTML = `
+                    <div class="video-content">
+                        <div class="video-header">
+                            <div class="video-title">${data.title}</div>
+                            <span class="status-badge ${data.isActive ? 'status-active' : 'status-inactive'}">
+                                ${data.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                        </div>
+                        <div class="video-links">
+                            <span>🖼️ Thumb: ${cutText(data.thumbnail, 40)}</span>
+                            <span>🔓 No Pass: ${cutText(data.noPasswordUrl, 40)}</span>
+                            <span>🔐 Pass: ${cutText(data.passwordUrl, 40)}</span>
+                        </div>
+                    </div>
+                    <div class="video-actions">
+                        <button class="btn-edit" onclick="editVideo('${id}')">Edit</button>
+                        <button class="btn-danger" onclick="deleteVideo('${id}')">Hapus</button>
+                    </div>
+                `;
+                videoList.appendChild(item);
+            });
+        }, (error) => {
+            console.error("Error fetching data:", error);
+            videoList.innerHTML = '<div class="loading-text" style="color:var(--danger)">Gagal memuat data. Cek Console.</div>';
+        });
+
+        // Helper: Potong teks panjang
+        function cutText(text, length) {
+            if(!text) return '-';
+            return text.length > length ? text.substring(0, length) + '...' : text;
+        }
+
+        // ==========================================
+        // CREATE & UPDATE DATA
+        // ==========================================
+        videoForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Menyimpan...";
+
+            const docId = document.getElementById('docId').value;
+            
+            const formData = {
+                title: document.getElementById('title').value,
+                thumbnail: document.getElementById('thumbnail').value,
+                noPasswordUrl: document.getElementById('noPasswordUrl').value,
+                passwordUrl: document.getElementById('passwordUrl').value,
+                isActive: document.getElementById('isActive').checked,
+                // createdAt ditambahkan logic terpisah di bawah
+            };
+
+            try {
+                if (docId) {
+                    // --- UPDATE MODE ---
+                    const docRef = doc(db, "videos", docId);
+                    await updateDoc(docRef, formData);
+                    alert("✅ Data berhasil diperbarui!");
+                } else {
+                    // --- CREATE MODE ---
+                    // Tambah createdAt serverTimestamp hanya saat create baru
+                    formData.createdAt = serverTimestamp();
+                    await addDoc(collection(db, "videos"), formData);
+                    alert("✅ Video baru berhasil ditambahkan!");
+                }
+                
+                resetForm();
+
+            } catch (error) {
+                console.error("Error saving document: ", error);
+                alert("❌ Terjadi kesalahan: " + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = docId ? "Update Video" : "Simpan Video";
+            }
+        });
+
+        // ==========================================
+        // DELETE DATA
+        // ==========================================
+        window.deleteVideo = async (id) => {
+            if (confirm("⚠️ Apakah Anda yakin ingin menghapus video ini permanen?")) {
+                try {
+                    await deleteDoc(doc(db, "videos", id));
+                    // Tidak perlu alert sukses karena data akan hilang otomatis dari UI (onSnapshot)
+                } catch (error) {
+                    alert("Gagal menghapus: " + error.message);
+                }
+            }
+        };
+
+        // ==========================================
+        // EDIT HELPER (POPULATE FORM)
+        // ==========================================
+        window.editVideo = (id) => {
+            // Kita cari data dari DOM atau fetch ulang. 
+            // Karena kita pakai onSnapshot tapi tidak simpan local state array global,
+            // cara paling aman adalah fetch single doc atau cari element UI (kurang akurat).
+            // Di sini kita fetch single doc agar data akurat.
+            
+            // Scroll ke atas
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Ambil data spesifik document
+            // (Sebenarnya bisa optimasi dengan simpan data snapshot di variabel global, 
+            // tapi ini lebih aman untuk konsistensi data).
+            const docRef = doc(db, "videos", id);
+            
+            // Kita pakai teknik sederhana: ambil dari input hidden untuk trigger fetch? 
+            // Tidak, kita akses Firestore langsung saja untuk ambil data pre-fill.
+            // ATAU: Karena ini admin panel sederhana, kita bisa ambil dari data yang sudah di-load 
+            // kalau kita simpan di array. Tapi demi simpel, kita fetch ulang "getDoc" tidak perlu,
+            // kita gunakan data yang ada di snapshot kalau kita simpan. 
+            // OPSI TERCEPAT: Fetch single doc.
+            
+            // Note: Di production app, baiknya pakai State Management.
+            import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js")
+                .then(async ({ getDoc }) => {
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        
+                        // Isi Form
+                        document.getElementById('docId').value = id;
+                        document.getElementById('title').value = data.title;
+                        document.getElementById('thumbnail').value = data.thumbnail;
+                        document.getElementById('noPasswordUrl').value = data.noPasswordUrl;
+                        document.getElementById('passwordUrl').value = data.passwordUrl;
+                        document.getElementById('isActive').checked = data.isActive;
+
+                        // Ubah UI Mode Edit
+                        formHeader.innerText = "Edit Video";
+                        submitBtn.innerText = "Update Video";
+                        submitBtn.classList.replace('btn-primary', 'btn-edit'); // opsional styling
+                        cancelBtn.style.display = "inline-block";
+                    }
+                });
+        };
+
+        // ==========================================
+        // RESET FORM
+        // ==========================================
+        function resetForm() {
+            videoForm.reset();
+            document.getElementById('docId').value = "";
+            document.getElementById('isActive').checked = true; // Default active
+            
+            formHeader.innerText = "Tambah Video Baru";
+            submitBtn.innerText = "Simpan Video";
+            submitBtn.classList.remove('btn-edit');
+            submitBtn.classList.add('btn-primary');
+            cancelBtn.style.display = "none";
+        }
+
+        cancelBtn.addEventListener('click', resetForm);
+
+    </script>
+</body>
+</html>
