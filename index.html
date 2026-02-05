@@ -1,5 +1,6 @@
+    videosRef,
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,6 +27,8 @@
             --shadow-hover: 0 15px 30px rgba(0,0,0,0.15);
             --border-color: #e0e0e0;
             --toggle-bg: #dfe6e9;
+            --notice-bg: #ffffff;
+            --notice-border: #0984e3;
         }
 
         [data-theme="dark"] {
@@ -41,13 +44,15 @@
             --shadow-hover: 0 15px 30px rgba(0,0,0,0.5);
             --border-color: #2d3436;
             --toggle-bg: #2d3436;
+            --notice-bg: #1a1a1a;
+            --notice-border: #74b9ff;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease;
         }
 
         body {
@@ -88,6 +93,38 @@
         
         .logo:hover { opacity: 0.8; }
 
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        /* Search Toggle Button */
+        #searchToggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            position: relative;
+            width: 32px;
+            height: 32px;
+        }
+
+        #searchToggle svg {
+            width: 24px;
+            height: 24px;
+            position: absolute;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+        }
+
+        .icon-close { opacity: 0; transform: rotate(-90deg) scale(0); }
+        .searching .icon-search { opacity: 0; transform: rotate(90deg) scale(0); }
+        .searching .icon-close { opacity: 1; transform: rotate(0deg) scale(1); }
+
         /* Toggle Switch */
         .theme-switch-wrapper { display: flex; align-items: center; }
         .theme-switch { display: inline-block; height: 28px; position: relative; width: 54px; }
@@ -98,11 +135,117 @@
         input:checked + .slider:before { transform: translateX(24px); }
 
         /* =========================================
+           SEARCH BAR
+           ========================================= */
+        #searchBarContainer {
+            background-color: var(--bg-card);
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        #searchBarContainer.active {
+            max-height: 100px;
+            opacity: 1;
+            padding: 1rem 5%;
+        }
+
+        .search-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input-wrapper {
+            width: 100%;
+            position: relative;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 12px 50px 12px 20px;
+            border-radius: 30px;
+            border: 2px solid var(--border-color);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        #searchInput:focus { border-color: var(--accent); }
+
+        #searchSubmitBtn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* =========================================
+           IMPORTANT NOTICE
+           ========================================= */
+        .notice-container {
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding: 0 5%;
+            width: 100%;
+        }
+
+        .important-notice {
+            background-color: var(--notice-bg);
+            border-left: 5px solid var(--notice-border);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-card);
+            color: var(--text-main);
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+
+        .important-notice strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .notice-list {
+            list-style: none;
+        }
+
+        .notice-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 5px;
+        }
+
+        .notice-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* =========================================
            MAIN CONTENT (GRID)
            ========================================= */
         main {
             flex: 1;
-            padding: 3rem 5%;
+            padding: 2rem 5% 3rem;
             max-width: 1200px;
             margin: 0 auto;
             width: 100%;
@@ -240,6 +383,7 @@
             .gallery-grid { grid-template-columns: 1fr; }
             header { padding: 1rem 5%; }
             .logo { font-size: 1.2rem; }
+            #searchBarContainer.active { padding: 0.8rem 5%; }
         }
     </style>
 </head>
@@ -250,13 +394,56 @@
             MR.RUSDIANA
         </a>
 
-        <div class="theme-switch-wrapper">
-            <label class="theme-switch" for="checkbox">
-                <input type="checkbox" id="checkbox" />
-                <div class="slider"></div>
-            </label>
+        <div class="header-controls">
+            <button id="searchToggle" aria-label="Toggle Search">
+                <!-- Search Icon -->
+                <svg class="icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <!-- Close Icon -->
+                <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" checked />
+                    <div class="slider"></div>
+                </label>
+            </div>
         </div>
     </header>
+
+    <div id="searchBarContainer">
+        <div class="search-inner">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" placeholder="Cari konten...">
+                <button id="searchSubmitBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="notice-container">
+        <div class="important-notice">
+            <strong>⚠️ PENTING</strong>
+            <ul class="notice-list">
+                <li>Pastikan memilih part konten yang sama dengan video YouTube agar password sesuai.</li>
+                <li>Jika muncul iklan, langsung tekan Back/Kembali.</li>
+                <li>Simpan link ini agar memudahkan pencarian ke depannya — kalian hanya perlu mencari password di konten YouTube.</li>
+                <li>Link dengan password akan kedaluwarsa dalam 7 hari.</li>
+                <li>Link tanpa password tidak akan kedaluwarsa.</li>
+                <li>Password selalu ada di konten video YouTube saya.</li>
+                <li>Terima kasih.</li>
+            </ul>
+        </div>
+    </div>
 
     <main>
         <div class="gallery-grid" id="galleryGrid"></div>
@@ -277,7 +464,6 @@
     <script type="module">
         // 1. Import fungsi yang dibutuhkan dari Firebase SDK (via CDN)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        // EDIT: Menambahkan import query function
         import { 
             getFirestore, 
             collection, 
@@ -299,22 +485,13 @@
             measurementId: "G-BTCV8EV2K7"
         };
 
-        // 3. Inisialisasi Firebase App
         const app = initializeApp(firebaseConfig);
-
-        // 4. Inisialisasi Firestore Service
         const db = getFirestore(app);
 
-        // 5. Cek koneksi
-        console.log("====================================");
-        console.log("✅ Firebase Config Loaded");
-        console.log("🔥 Firestore Instance Ready");
-        console.log("====================================");
-
         // =========================================
-        // DATA FALLBACK (DUMMY DATA)
+        // DATA STATE
         // =========================================
-        // Data ini hanya akan dipakai jika Firestore gagal/kosong
+        let allVideosInCurrentPage = []; // Store currently loaded data for searching
         const dummyData = [
             {
                 title: "Cara Membuat Animasi Keren dengan Mudah",
@@ -343,27 +520,26 @@
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const pageIndicator = document.getElementById('pageIndicator');
+        const searchToggle = document.getElementById('searchToggle');
+        const searchBarContainer = document.getElementById('searchBarContainer');
+        const searchInput = document.getElementById('searchInput');
+        const searchSubmitBtn = document.getElementById('searchSubmitBtn');
 
         // =========================================
         // FUNCTIONS
         // =========================================
 
-        /**
-         * Fungsi untuk merender kartu video ke dalam grid (TIDAK DIUBAH)
-         */
         function renderGallery(data) {
             galleryGrid.innerHTML = '';
             
             if (data.length === 0) {
-                galleryGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Belum ada video yang tersedia.</p>';
+                galleryGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 2rem; color: var(--text-sub);">Tidak ditemukan konten yang sesuai.</p>';
                 return;
             }
 
             data.forEach((video, index) => {
                 const card = document.createElement('article');
                 card.classList.add('card');
-                
-                // Animasi staggered
                 card.style.animation = `fadeInUp 0.6s ease forwards ${index * 0.1}s`;
 
                 card.innerHTML = `
@@ -382,68 +558,78 @@
             });
         }
 
-        /**
-         * 🆕 FUNGSI BARU: Fetch Data dari Firestore
-         */
         async function fetchVideosFromFirestore() {
             try {
-                // Referensi ke koleksi 'videos'
                 const videosRef = collection(db, "videos");
-
-                // Buat query: yang aktif saja, urutkan dari terbaru, ambil 5
-                // CATATAN: Jika error index di console, klik link yang muncul di console untuk buat index di Firebase
                 const q = query(
-  videosRef,
-  where("isActive", "==", true),
-  limit(5)
-);
+                    videosRef,
+                    where("isActive", "==", true),
+                    limit(12) // Slightly higher limit for better UX
+                );
 
                 const querySnapshot = await getDocs(q);
-                
-                // Mapping hasil dokumen ke array object
-                const videos = querySnapshot.docs.map(doc => {
-                    return { id: doc.id, ...doc.data() };
-                });
-
-                return videos;
-
+                return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             } catch (error) {
                 console.error("❌ Gagal mengambil data Firestore:", error);
                 return null;
             }
         }
 
-        // =========================================
-        // PAGINATION & LOAD LOGIC (MODIFIED)
-        // =========================================
-        
         let currentPage = 1;
 
-        /**
-         * Fungsi Load Page telah diupdate menjadi ASYNC
-         * untuk mengambil data Firestore
-         */
         async function loadPage(page) {
-            console.log(`⏳ Memuat data untuk halaman ${page}...`);
-            
-            // Tampilkan loading (opsional, visual feedback sederhana)
-            galleryGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Sedang memuat data...</p>';
+            galleryGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 2rem;">Sedang memuat data...</p>';
 
-            // 1. Coba ambil data dari Firestore
             const firestoreData = await fetchVideosFromFirestore();
 
-            // 2. Cek apakah data ada
             if (firestoreData && firestoreData.length > 0) {
-                console.log(`✅ Berhasil memuat ${firestoreData.length} video dari Firestore.`);
+                allVideosInCurrentPage = firestoreData;
                 renderGallery(firestoreData);
             } else {
-                // 3. Jika gagal atau kosong, gunakan Dummy Data (Fallback)
-                console.warn("⚠️ Data Firestore kosong atau error. Menggunakan Dummy Data.");
+                allVideosInCurrentPage = dummyData;
                 renderGallery(dummyData);
             }
             
             pageIndicator.innerText = `HALAMAN ${page}`;
+            // If there's a current search query, apply it after loading
+            if (searchInput.value.trim() !== "") {
+                handleSearch();
+            }
         }
+
+        // =========================================
+        // SEARCH LOGIC
+        // =========================================
+
+        function handleSearch() {
+            const queryText = searchInput.value.toLowerCase().trim();
+            if (queryText === "") {
+                renderGallery(allVideosInCurrentPage);
+            } else {
+                const filtered = allVideosInCurrentPage.filter(video => 
+                    video.title.toLowerCase().includes(queryText)
+                );
+                renderGallery(filtered);
+            }
+        }
+
+        searchToggle.addEventListener('click', () => {
+            searchToggle.classList.toggle('searching');
+            searchBarContainer.classList.toggle('active');
+            if (searchBarContainer.classList.contains('active')) {
+                setTimeout(() => searchInput.focus(), 300);
+            }
+        });
+
+        searchInput.addEventListener('input', handleSearch);
+        searchSubmitBtn.addEventListener('click', handleSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSearch();
+        });
+
+        // =========================================
+        // PAGINATION & BUTTONS
+        // =========================================
 
         prevBtn.addEventListener('click', () => {
             if (currentPage > 1) {
@@ -454,7 +640,6 @@
         });
 
         nextBtn.addEventListener('click', () => {
-            // Logic next page bisa dikembangkan nanti (menggunakan startAfter di Firestore)
             currentPage++;
             loadPage(currentPage);
             animateButton(nextBtn);
@@ -466,24 +651,19 @@
         }
 
         // =========================================
-        // INITIALIZATION
-        // =========================================
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            loadPage(currentPage);
-        });
-
-        // =========================================
-        // DARK MODE LOGIC (TETAP)
+        // DARK MODE LOGIC
         // =========================================
         const toggleSwitch = document.querySelector('#checkbox');
         const currentTheme = localStorage.getItem('theme');
 
-        if (currentTheme) {
+        // Set default theme to DARK if nothing is stored
+        if (!currentTheme) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            toggleSwitch.checked = true;
+        } else {
             document.documentElement.setAttribute('data-theme', currentTheme);
-            if (currentTheme === 'dark') {
-                toggleSwitch.checked = true;
-            }
+            toggleSwitch.checked = (currentTheme === 'dark');
         }
 
         function switchTheme(e) {
@@ -498,6 +678,15 @@
 
         toggleSwitch.addEventListener('change', switchTheme);
 
+        // =========================================
+        // INITIALIZATION
+        // =========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPage(currentPage);
+        });
+
     </script>
 </body>
 </html>
+
+ 
