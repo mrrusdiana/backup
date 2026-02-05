@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MANZCHANEL | Video Gallery</title>
+
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -192,7 +193,7 @@
         }
 
         /* =========================================
-           IMPORTANT NOTICE
+           IMPORTANT NOTICE (Updated)
            ========================================= */
         .notice-container {
             max-width: 1200px;
@@ -210,19 +211,40 @@
             color: var(--text-main);
             font-size: 0.85rem;
             line-height: 1.7;
+            position: relative;
+            overflow: hidden;
+            max-height: 1000px; /* High enough for expanded state */
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), padding 0.5s ease;
+        }
+
+        /* Notice Header Layout */
+        .notice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
         }
 
         .important-notice strong {
             display: block;
-            margin-bottom: 8px;
             color: var(--accent);
             text-transform: uppercase;
             letter-spacing: 1px;
             font-weight: 700;
         }
 
+        .notice-content {
+    opacity: 1;
+    max-height: 500px;
+    overflow: hidden;
+    transition: 
+      opacity 0.4s ease,
+      max-height 0.4s ease;
+}
+
         .notice-list {
             list-style: none;
+            margin-bottom: 12px;
         }
 
         .notice-list li {
@@ -231,12 +253,85 @@
             margin-bottom: 5px;
         }
 
+/* =====================================
+   COLLAPSED NOTICE SIZE FIX
+===================================== */
+
+/* Card lebih pendek saat diperkecil */
+.important-notice.collapsed {
+  padding: 0.8rem 1rem;
+  max-height: 48px;
+}
+
+/* Header rapat */
+.important-notice.collapsed .notice-header {
+  margin-bottom: 0;
+  min-height: 32px;
+}
+
+/* Teks PENTING tidak bikin tinggi */
+.important-notice strong {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  font-size: 0.9rem;
+}
+
+/* Tombol PERBESAR sejajar tengah */
+.important-notice.collapsed .expand-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+}
+
+.important-notice.collapsed .notice-content {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+}
+
         .notice-list li::before {
             content: "•";
             position: absolute;
             left: 0;
             color: var(--accent);
             font-weight: bold;
+        }
+
+        /* Toggle Buttons */
+        .notice-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.75rem;
+            cursor: pointer;
+            letter-spacing: 1px;
+            padding: 5px 0;
+            text-decoration: underline;
+        }
+
+        .expand-btn {
+            display: none; /* Hidden by default */
+        }
+
+        /* Collapsed State Styles */
+        .important-notice.collapsed {
+            max-height: 60px; /* Small height for header only */
+            padding-bottom: 1rem;
+        }
+
+        .important-notice.collapsed .notice-header {
+            margin-bottom: 0;
+        }
+
+        .important-notice.collapsed .notice-content {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .important-notice.collapsed .expand-btn {
+            display: block;
         }
 
         /* =========================================
@@ -383,15 +478,17 @@
             header { padding: 1rem 5%; }
             .logo { font-size: 1.2rem; }
             #searchBarContainer.active { padding: 0.8rem 5%; }
+            .important-notice.collapsed { max-height: 55px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="https://youtube.com/@mrrusdiana?si=LbYNRqDi6KbBopaK" target="_blank" class="logo">
-            MANZCHANEL
-        </a>
+        <a href="https://youtube.com/@gamemanz?si=waRCZ8Wtb9FOkRUf" target="_blank" class="logo">
+    MANZCHANEL
+</a>
+
 
         <div class="header-controls">
             <button id="searchToggle" aria-label="Toggle Search">
@@ -429,18 +526,26 @@
         </div>
     </div>
 
+    <!-- UPDATED: Notice Container with Collapse/Expand -->
     <div class="notice-container">
-        <div class="important-notice">
-            <strong>⚠️ PENTING</strong>
-            <ul class="notice-list">
-                <li>Pastikan memilih part konten yang sama dengan video YouTube agar password sesuai.</li>
-                <li>Jika muncul iklan, langsung tekan Back/Kembali.</li>
-                <li>Simpan link ini agar memudahkan pencarian ke depannya — kalian hanya perlu mencari password di konten YouTube.</li>
-                <li>Link dengan password akan kedaluwarsa dalam 7 hari.</li>
-                <li>Link tanpa password tidak akan kedaluwarsa.</li>
-                <li>Password selalu ada di konten video YouTube saya.</li>
-                <li>Terima kasih.</li>
-            </ul>
+        <div class="important-notice" id="noticeCard">
+            <div class="notice-header">
+                <strong>⚠️ PENTING</strong>
+                <button class="notice-toggle-btn expand-btn" id="btnExpand">PERBESAR</button>
+            </div>
+            
+            <div class="notice-content" id="noticeContent">
+                <ul class="notice-list">
+                    <li>Pastikan memilih part konten yang sama dengan video YouTube agar password sesuai.</li>
+                    <li>Jika muncul iklan, langsung tekan Back/Kembali.</li>
+                    <li>Simpan link ini agar memudahkan pencarian ke depannya — kalian hanya perlu mencari password di konten YouTube.</li>
+                    <li>Link dengan password akan kedaluwarsa dalam 7 hari.</li>
+                    <li>Link tanpa password tidak akan kedaluwarsa.</li>
+                    <li>Password selalu ada di konten video YouTube saya.</li>
+                    <li>Terima kasih.</li>
+                </ul>
+                <button class="notice-toggle-btn collapse-btn" id="btnCollapse">PERKECIL</button>
+            </div>
         </div>
     </div>
 
@@ -460,232 +565,208 @@
         </div>
     </footer>
 
-    <script type="module">
-        // 1. Import fungsi yang dibutuhkan dari Firebase SDK (via CDN)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { 
-            getFirestore, 
-            collection, 
-            query, 
-            where, 
-            orderBy, 
-            limit, 
-            getDocs 
-        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+   <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { 
+        getFirestore, 
+        collection, 
+        query, 
+        where, 
+        getDocs 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // 2. Konfigurasi Firebase Anda
-        const firebaseConfig = {
-            apiKey: "AIzaSyDNsUDr4duaFLChn4wXjg7v22GuNk5RGt4",
-            authDomain: "viewrusdiana.firebaseapp.com",
-            projectId: "viewrusdiana",
-            storageBucket: "viewrusdiana.firebasestorage.app",
-            messagingSenderId: "293768351632",
-            appId: "1:293768351632:web:ec3c7a63621a9a9fa9ad15",
-            measurementId: "G-BTCV8EV2K7"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyDNsUDr4duaFLChn4wXjg7v22GuNk5RGt4",
+        authDomain: "viewrusdiana.firebaseapp.com",
+        projectId: "viewrusdiana",
+        storageBucket: "viewrusdiana.firebasestorage.app",
+        messagingSenderId: "293768351632",
+        appId: "1:293768351632:web:ec3c7a63621a9a9fa9ad15",
+        measurementId: "G-BTCV8EV2K7"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        // =========================================
-        // DATA STATE
-        // =========================================
-        let allVideosInCurrentPage = []; // Store currently loaded data for searching
-        const dummyData = [
-            {
-                title: "Cara Membuat Animasi Keren dengan Mudah",
-                thumbnail: "https://i.ibb.co.com/R4bxTdNF/Proyek-Baru-23-Copy-F6-C3100.png",
-                noPasswordUrl: "https://bicolink.com/GU0R",
-                passwordUrl: "https://bicolink.com/GU0R"
-            },
-            {
-                title: "Tutorial Editing Video Cinematic",
-                thumbnail: "https://i.ibb.co.com/R4bxTdNF/Proyek-Baru-23-Copy-F6-C3100.png",
-                noPasswordUrl: "https://bicolink.com/GU0R",
-                passwordUrl: "https://bicolink.com/GU0R"
-            },
-            {
-                title: "Tips & Trik Menjadi YouTuber Pemula",
-                thumbnail: "https://i.ibb.co.com/R4bxTdNF/Proyek-Baru-23-Copy-F6-C3100.png",
-                noPasswordUrl: "https://bicolink.com/GU0R",
-                passwordUrl: "https://bicolink.com/GU0R"
-            }
-        ];
+    // =========================================
+    // DATA STATE & CONSTANTS
+    // =========================================
+    let allVideosMaster = []; 
+    let filteredVideos = [];
+    const ITEMS_PER_PAGE = 5;
+    let currentPage = 1;
 
-        // =========================================
-        // DOM ELEMENTS
-        // =========================================
-        const galleryGrid = document.getElementById('galleryGrid');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const pageIndicator = document.getElementById('pageIndicator');
-        const searchToggle = document.getElementById('searchToggle');
-        const searchBarContainer = document.getElementById('searchBarContainer');
-        const searchInput = document.getElementById('searchInput');
-        const searchSubmitBtn = document.getElementById('searchSubmitBtn');
-
-        // =========================================
-        // FUNCTIONS
-        // =========================================
-
-        function renderGallery(data) {
-            galleryGrid.innerHTML = '';
-            
-            if (data.length === 0) {
-                galleryGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 2rem; color: var(--text-sub);">Tidak ditemukan konten yang sesuai.</p>';
-                return;
-            }
-
-            data.forEach((video, index) => {
-                const card = document.createElement('article');
-                card.classList.add('card');
-                card.style.animation = `fadeInUp 0.6s ease forwards ${index * 0.1}s`;
-
-                card.innerHTML = `
-                    <div class="card-thumb">
-                        <img src="${video.thumbnail}" alt="${video.title}" loading="lazy" onerror="this.src='https://placehold.co/600x400?text=No+Image'">
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title">${video.title}</h3>
-                        <div class="card-actions">
-                            <a href="${video.passwordUrl}" target="_blank" class="btn btn-password">Password</a>
-                            <a href="${video.noPasswordUrl}" target="_blank" class="btn btn-visit">No Password</a>
-                        </div>
-                    </div>
-                `;
-                galleryGrid.appendChild(card);
-            });
+    const dummyData = [
+        {
+            title: "ALBUM 1 || 5 VIDEY PART 2",
+            thumbnail: "https://i.ibb.co.com/R4bxTdNF/Proyek-Baru-23-Copy-F6-C3100.png",
+            noPasswordUrl: "https://bicolink.com/GU0R",
+            passwordUrl: "https://bicolink.com/GU0R"
+        },
+        {
+            title: "ALBUM 1 || 5 VIDEY PART 1",
+            thumbnail: "https://i.ibb.co.com/R4bxTdNF/Proyek-Baru-23-Copy-F6-C3100.png",
+            noPasswordUrl: "https://bicolink.com/GU0R",
+            passwordUrl: "https://bicolink.com/GU0R"
+        },
+        {
+            title: "Random Content Without Part",
+            thumbnail: "https://i.ibb.co.com/R4bxTdNF/Proyek-Baru-23-Copy-F6-C3100.png",
+            noPasswordUrl: "https://bicolink.com/GU0R",
+            passwordUrl: "https://bicolink.com/GU0R"
         }
+    ];
 
-        async function fetchVideosFromFirestore() {
-            try {
-                const videosRef = collection(db, "videos");
-                const q = query(
-                    videosRef,
-                    where("isActive", "==", true),
-                    limit(12) // Slightly higher limit for better UX
-                );
+    const galleryGrid = document.getElementById('galleryGrid');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const pageIndicator = document.getElementById('pageIndicator');
+    const searchToggle = document.getElementById('searchToggle');
+    const searchBarContainer = document.getElementById('searchBarContainer');
+    const searchInput = document.getElementById('searchInput');
+    const searchSubmitBtn = document.getElementById('searchSubmitBtn');
+    const noticeCard = document.getElementById('noticeCard');
+    const btnCollapse = document.getElementById('btnCollapse');
+    const btnExpand = document.getElementById('btnExpand');
 
-                const querySnapshot = await getDocs(q);
-                return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            } catch (error) {
-                console.error("❌ Gagal mengambil data Firestore:", error);
-                return null;
-            }
+    // =========================================
+    // SORTING LOGIC
+    // =========================================
+    function getPartNumber(title) {
+        const match = title.match(/PART\s+(\d+)$/i);
+        return match ? parseInt(match[1], 10) : null;
+    }
+
+    function sortVideos(videos) {
+        return videos.sort((a, b) => {
+            const partA = getPartNumber(a.title);
+            const partB = getPartNumber(b.title);
+
+            if (partA !== null && partB !== null) return partA - partB;
+            if (partA !== null) return -1;
+            if (partB !== null) return 1;
+            return 0; 
+        });
+    }
+
+    // =========================================
+    // CORE FUNCTIONS
+    // =========================================
+    function renderGallery(data) {
+        galleryGrid.innerHTML = '';
+        if (data.length === 0) {
+            galleryGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 2rem; color: var(--text-sub);">Tidak ditemukan konten yang sesuai.</p>';
+            return;
         }
+        data.forEach((video, index) => {
+            const card = document.createElement('article');
+            card.classList.add('card');
+            card.style.animation = `fadeInUp 0.6s ease forwards ${index * 0.1}s`;
+            card.innerHTML = `
+                <div class="card-thumb">
+                    <img src="${video.thumbnail}" alt="${video.title}" loading="lazy" onerror="this.src='https://placehold.co/600x400?text=No+Image'">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">${video.title}</h3>
+                    <div class="card-actions">
+                        <a href="${video.passwordUrl}" target="_blank" class="btn btn-password">Password</a>
+                        <a href="${video.noPasswordUrl}" target="_blank" class="btn btn-visit">No Password</a>
+                    </div>
+                </div>
+            `;
+            galleryGrid.appendChild(card);
+        });
+    }
 
-        let currentPage = 1;
+    async function fetchVideosFromFirestore() {
+        try {
+            const videosRef = collection(db, "videos");
+            const q = query(videosRef, where("isActive", "==", true));
+            const querySnapshot = await getDocs(q);
+            const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            return data.length > 0 ? data : null;
+        } catch (error) {
+            console.error("❌ Firestore Error:", error);
+            return null;
+        }
+    }
 
-        async function loadPage(page) {
+    function updatePaginationControls() {
+        const totalItems = filteredVideos.length;
+        const maxPage = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
+        
+        pageIndicator.innerText = `HALAMAN ${currentPage}`;
+        prevBtn.style.opacity = currentPage === 1 ? "0.5" : "1";
+        prevBtn.style.pointerEvents = currentPage === 1 ? "none" : "auto";
+        nextBtn.style.opacity = currentPage >= maxPage ? "0.5" : "1";
+        nextBtn.style.pointerEvents = currentPage >= maxPage ? "none" : "auto";
+    }
+
+    async function loadPage(page) {
+        if (allVideosMaster.length === 0) {
             galleryGrid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 2rem;">Sedang memuat data...</p>';
-
             const firestoreData = await fetchVideosFromFirestore();
-
-            if (firestoreData && firestoreData.length > 0) {
-                allVideosInCurrentPage = firestoreData;
-                renderGallery(firestoreData);
-            } else {
-                allVideosInCurrentPage = dummyData;
-                renderGallery(dummyData);
-            }
-            
-            pageIndicator.innerText = `HALAMAN ${page}`;
-            // If there's a current search query, apply it after loading
-            if (searchInput.value.trim() !== "") {
-                handleSearch();
-            }
+            allVideosMaster = sortVideos(firestoreData || dummyData);
+            filteredVideos = [...allVideosMaster];
         }
 
-        // =========================================
-        // SEARCH LOGIC
-        // =========================================
+        currentPage = page;
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        const pageData = filteredVideos.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+        
+        renderGallery(pageData);
+        updatePaginationControls();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-        function handleSearch() {
-            const queryText = searchInput.value.toLowerCase().trim();
-            if (queryText === "") {
-                renderGallery(allVideosInCurrentPage);
-            } else {
-                const filtered = allVideosInCurrentPage.filter(video => 
-                    video.title.toLowerCase().includes(queryText)
-                );
-                renderGallery(filtered);
-            }
-        }
-
-        searchToggle.addEventListener('click', () => {
-            searchToggle.classList.toggle('searching');
-            searchBarContainer.classList.toggle('active');
-            if (searchBarContainer.classList.contains('active')) {
-                setTimeout(() => searchInput.focus(), 300);
-            }
-        });
-
-        searchInput.addEventListener('input', handleSearch);
-        searchSubmitBtn.addEventListener('click', handleSearch);
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleSearch();
-        });
-
-        // =========================================
-        // PAGINATION & BUTTONS
-        // =========================================
-
-        prevBtn.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                loadPage(currentPage);
-                animateButton(prevBtn);
-            }
-        });
-
-        nextBtn.addEventListener('click', () => {
-            currentPage++;
-            loadPage(currentPage);
-            animateButton(nextBtn);
-        });
-
-        function animateButton(btn) {
-            btn.style.transform = "scale(0.9)";
-            setTimeout(() => btn.style.transform = "scale(1)", 150);
-        }
-
-        // =========================================
-        // DARK MODE LOGIC
-        // =========================================
-        const toggleSwitch = document.querySelector('#checkbox');
-        const currentTheme = localStorage.getItem('theme');
-
-        // Set default theme to DARK if nothing is stored
-        if (!currentTheme) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            localStorage.setItem('theme', 'dark');
-            toggleSwitch.checked = true;
+    // =========================================
+    // EVENTS
+    // =========================================
+    function handleSearch() {
+        const queryText = searchInput.value.toLowerCase().trim();
+        if (queryText === "") {
+            filteredVideos = [...allVideosMaster];
         } else {
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            toggleSwitch.checked = (currentTheme === 'dark');
+            filteredVideos = allVideosMaster.filter(v => v.title.toLowerCase().includes(queryText));
         }
+        currentPage = 1;
+        loadPage(currentPage);
+    }
 
-        function switchTheme(e) {
-            if (e.target.checked) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.documentElement.setAttribute('data-theme', 'light');
-                localStorage.setItem('theme', 'light');
-            }
+    searchToggle.addEventListener('click', () => {
+        searchToggle.classList.toggle('searching');
+        searchBarContainer.classList.toggle('active');
+        if (searchBarContainer.classList.contains('active')) {
+            setTimeout(() => searchInput.focus(), 300);
         }
+    });
 
-        toggleSwitch.addEventListener('change', switchTheme);
+    searchInput.addEventListener('input', handleSearch);
+    searchSubmitBtn.addEventListener('click', handleSearch);
+    searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSearch(); });
 
-        // =========================================
-        // INITIALIZATION
-        // =========================================
-        document.addEventListener('DOMContentLoaded', () => {
-            loadPage(currentPage);
-        });
+    prevBtn.addEventListener('click', () => { if (currentPage > 1) loadPage(currentPage - 1); });
+    nextBtn.addEventListener('click', () => { 
+        if (currentPage < Math.ceil(filteredVideos.length / ITEMS_PER_PAGE)) loadPage(currentPage + 1); 
+    });
 
-    </script>
+    btnCollapse.addEventListener('click', () => noticeCard.classList.add('collapsed'));
+    btnExpand.addEventListener('click', () => noticeCard.classList.remove('collapsed'));
+
+    // Dark Mode
+    const toggleSwitch = document.querySelector('#checkbox');
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    toggleSwitch.checked = (currentTheme === 'dark');
+    toggleSwitch.addEventListener('change', (e) => {
+        const theme = e.target.checked ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => loadPage(1));
+</script>
+
 </body>
 </html>
 
- 
